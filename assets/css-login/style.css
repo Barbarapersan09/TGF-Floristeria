@@ -1,0 +1,127 @@
+a {
+  text-decoration: none;
+  color: #ff8c42;
+  -webkit-transition: .5s ease;
+  transition: .5s ease;
+}
+a:hover {
+  color: #e67e22;
+  text-decoration: none !important;
+}
+
+.botones-principales {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 40px 0;
+}
+.botones-principales:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+.botones-principales li a {
+  display: block;
+  text-decoration: none;
+  padding: 15px;
+  background: rgba(255, 140, 66, 0.25);
+  color: #ff8c42;
+  font-size: 20px;
+  float: left;
+  width: 50%;
+  text-align: center;
+  cursor: pointer;
+  -webkit-transition: .5s ease;
+  transition: .5s ease;
+}
+.botones-principales li a:hover {
+  background: #e67e22;
+  color: #ffffff;
+}
+.botones-principales .active a {
+  background: #ff8c42;
+  color: #ffffff;
+}
+
+.tab-content > div:last-child {
+  display: none;
+}
+
+h1 {
+  text-align: center;
+  color: #ffffff;
+  font-weight: 300;
+  margin: 0 0 40px;
+}
+
+h2 {
+    text-align: center;
+    color: #ff8c42;
+    font-weight: 1000;
+    margin: 0;
+}
+
+p {
+    text-align: center;
+    color: #ffffff;
+    margin: 0px 0px 50px 0px;
+}
+
+div.info {
+    color: #ffd4ba;
+    display: box;
+    text-align: center;
+    padding: 5px;
+    margin-top: -20px;
+    margin-bottom: 15px;
+    border: 1px solid #e67e22;
+    background: #ff7043;
+}
+
+.button {
+  border: 0;
+  outline: none;
+  border-radius: 0;
+  padding: 15px 0;
+  font-size: 2rem;
+  font-weight: 600;
+  letter-spacing: .1em;
+  background: #ff8c42;
+  color: #ffffff;
+  -webkit-transition: all 0.5s ease;
+  transition: all 0.5s ease;
+  -webkit-appearance: none;
+}
+.button:hover, .button:focus {
+  background: #e67e22;
+  box-shadow: 0px 4px 10px 0px rgba(19, 35, 47, 0.3);
+  text-decoration: none !important;
+}
+
+.button-block {
+  margin-left: 32%;
+  width: 40%;
+}
+
+.forgot {
+  margin-top: -20px;
+  text-align: right;
+}
+
+.form-login{
+  padding: 10px;
+  position: relative;    
+}
+
+.form-create {
+  padding: 10px;
+  color: #FFF;
+  position: relative;    
+}
+
+.form {
+  padding: 30px;
+  max-width: 600px;
+  margin: 40px auto;
+  border-radius: 4px;
+  box-shadow: 0 4px 10px 4px rgba(19, 35, 47, 0.3);
+}
