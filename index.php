@@ -1,5 +1,5 @@
 <?php
-
+//esto es un cambio para un cambio de git.
 if (session_status() === PHP_SESSION_NONE) {
 	session_start();
 }
