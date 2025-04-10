@@ -1,8 +1,11 @@
+### activa visualizaciones de los errores en el navegador
 php_flag display_errors on 
 php_value error_reporting 32767
 
+### activa la reescritura de rutas 
 RewriteEngine On 
 RewriteBase /
 
+### definimos paginas personalizadas para estos errores
 ErrorDocument 404 /view/404.php
 ErrorDocument 403 /view/403.php
