@@ -171,7 +171,7 @@ if (!class_exists('model\Utils')) {
          }
       }
 
-      public static function correoFinalizarCompra($usuario)
+      public static function correoFinalizarCompra($usuario, $productos, $datos)
       {
          $mail = new PHPMailer(true);
 
@@ -193,18 +193,22 @@ if (!class_exists('model\Utils')) {
             $mail->Subject = 'Pedido realizado';
             $mail->addEmbeddedImage('../assets/img/logo.png', 'logo_cid'); // Ruta física al logo
             $mail->Body = '
-    <div style="max-width: 600px; margin: auto; font-family: Arial, sans-serif; background-color: #f9f9f9; padding: 20px; border-radius: 8px; text-align: center;">
-        <div style="padding: 10px; border-radius: 8px 8px 0 0;">
-            <img src="cid:logo_cid" alt="Floristeria Logo" style="max-width: 250px; margin-bottom: 10px;">
-        </div>
-        <h2 style="color: #333;">¡Gracias por tu pedido, ' . htmlspecialchars($usuario['nombre']) . '!</h2>
-        <p style="color: #555; font-size: 16px;">Tu compra ha sido procesada con éxito. Nos pondremos en contacto contigo cuando tu pedido esté en camino.</p>
-        <p style="color: #555; font-size: 14px; margin-top: 20px;">Si tienes alguna pregunta, no dudes en 
-            <a href="mailto:bpersan834@g.educaand.es" style="color: #ff9800; text-decoration: none;">contactarnos</a>.
-        </p>
-    </div>
-';
+                <div style="max-width: 600px; margin: auto; font-family: Arial, sans-serif; background-color: #f9f9f9; padding: 20px; border-radius: 8px; text-align: center;">
+                    <div style="padding: 10px; border-radius: 8px 8px 0 0;">
+                        <img src="cid:logo_cid" alt="Floristeria Logo" style="max-width: 250px; margin-bottom: 10px;">
+                    </div>
+                    <h2 style="color: #333;">¡Gracias por tu pedido, ' . htmlspecialchars($usuario['nombre']) . '!</h2>
+                    <p style="color: #555; font-size: 16px;">Tu compra ha sido procesada con éxito. Nos pondremos en contacto contigo cuando tu pedido esté en camino.</p>
+                    <p style="color: #555; font-size: 14px; margin-top: 20px;">Si tienes alguna pregunta, no dudes en 
+                        <a href="mailto:bpersan834@g.educaand.es" style="color: #ff9800; text-decoration: none;">contactarnos</a>.
+                    </p>
+                </div>
+            ';
 
+            $rutaPDF = Utils::facturaPDF(Utils::generarFacturaHtml($usuario, $productos, $datos));
+            if($rutaPDF){
+                $mail-> addAttachment($rutaPDF);
+            }
             // Enviar correo
             $mail->send();
             return true;
@@ -215,6 +219,97 @@ if (!class_exists('model\Utils')) {
           </div>';
          }
       }
+      //En este metodo vamos a generar la factura con html.
+      public static function generarFacturaHtml($usuario, $productos, $datos){
+          $html = '<!DOCTYPE html>
+            <html lang="en">
+            <head>
+            <style>
+                body{font-family: Arial, Helvetica, sans-serif;}
+                table{width: 100%;border-collapse: collapse;}
+                th,td{border: 1px solid black;padding: 8px;text-align: left;}
+                th{background-color: #F28123;}
+                .logo{
+                    max-height: 80px;
+                    margin-bottom: 20px;
+                }
+                
+                .total-cel{
+                    text-align: right;
+                    padding: 10px;
+                }
+            </style>
+            </head>
+            <body>
+                <!--<img src="http://floristeria.kesug.com/assets/img/logo.png" alt="Floristeria Logo" style="max-width: 250px; margin-bottom: 10px;">-->
+                <h2>Número Factura  ##'.$datos['id_pedido'].'</h2>
+                <p>Cliente: '.$usuario['nombre'].'</p>
+                <p>Email: '.$usuario['email'].'</p>
+                <p>Fecha: ' . date("d/m/Y").'</p> 
+                <h3>Productos</h3>
+                <table>
+                    <tr>
+                        <th>Producto</th>
+                        <th>Cantidad</th>
+                        <th>Precio</th>
+                        <th>Subtotal</th>
+                    </tr>';
+                    foreach($productos as $producto){
+                        $nombre= $producto['nombre'];
+                        $cantidad = intval($producto['cantidad']);
+                        $precio = floatval($producto['precio']);
+                        $subtotal = $precio * $cantidad;
+                        $html .= ' 
+                        <tr>
+                            <td>'.$nombre.'</td>
+                            <td>'.$cantidad.'</td>
+                            <td>'.number_format($precio, 2).'</td>
+                            <td>'.number_format($subtotal, 2).'</td>
+                        </tr>';
+                    }
+                   
+                $html .='
+                    <tr class="total">
+                        <td colspan="3">Total:</td>
+                        <td class="total-cel"> '.number_format($datos['monto'], 2).'€</td>
+                    </tr>
+                </table>';
+            $html.='
+           
+            </body>
+            </html>
+            ';
+          return $html;
+      }
+      //Funcion para generar el PDF de la factura.
+      public static function facturaPDF($html){
+          $apikey = "7qsFEfY6LvqnC3NykiNZe30Pbwcx5T89jeCcvt0n5MiB8g43ohoWWNZn7aYHoS0b";
+          $url = "https://api.html2pdf.app/v1/generate";
+          $data = [
+              'html'=> $html,
+              'apiKey'=> $apikey
+          ];
+          $option = [
+              'http'=> [
+                  'header'=> "Content-type: application/json",
+                  'method'=> 'POST',
+                  'content'=> json_encode($data),
+                  'ignore_errors'=> true
+              ]
+          ];
+          $context = stream_context_create($option);
+          $response = file_get_contents($url,false,$context);
+          if(strpos($response,"%PDF")!==0){
+            file_put_contents('../facturas/debug.txt',$response);
+            return false;
+          }
+
+          $nombrePDF = 'factura_'.uniqid().'.pdf';
+          $ruta = '../facturas/' .$nombrePDF;
+          file_put_contents($ruta, $response);
+          return $ruta;
+      }
+
       public static function crearPedido($montoTotal)
       {
          if (session_status() === PHP_SESSION_NONE) {

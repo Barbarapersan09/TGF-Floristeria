@@ -11,6 +11,7 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 $subtotal = 3;
 $productos = isset($_SESSION["carrito"]) ? $_SESSION["carrito"] : [];
+
 foreach ($productos as $id => $producto) {
     $precio = floatval(str_replace("€", "", $producto["precio"]));
     $cantidad = intval($producto["cantidad"]);
@@ -54,7 +55,7 @@ $usuario = [
 $carrito = $_SESSION["carrito"];
 $_SESSION["carrito"] = [];
  
-if (Utils::correoFinalizarCompra($usuario)) {
+if (Utils::correoFinalizarCompra($usuario, $productos, $datos)) {
     echo "<div style='color: #155723; text-align: center; background: #d4edda; border: 1px solid rgb(140, 202, 154);border-radius: 5px; padding: 20px; font-size: 18px'>
         <strong> Compra finalizada.</strong>
     </div>

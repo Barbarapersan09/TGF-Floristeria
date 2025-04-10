@@ -138,11 +138,11 @@ if (!isset($_SESSION["id"])){
 									<div class="card-body">
 										<div class="billing-address-form">
 											<form action="../index.php">                                                
-												<p><input type="text" placeholder="Nombre" required></p>
-												<p><input type="email" placeholder="Email" required></p>
-												<p><input type="text" placeholder="Dirección" required></p>
-												<p><input type="tel" placeholder="Teléfono" required></p>
-												<p><textarea name="bill" id="bill" cols="30" rows="10" placeholder="Comentarios"></textarea></p>
+												<p><input type="text" name="nombre" placeholder="Nombre" required></p>
+												<p><input type="email" name="email"  placeholder="Email" required></p>
+												<p><input type="text" name="direccion" placeholder="Dirección" required></p>
+												<p><input type="tel" name="telefono" placeholder="Teléfono" required></p>
+												<p><textarea name="comentarios" id="bill" cols="30" rows="10" placeholder="Comentarios"></textarea></p>
 											</form>
 										</div>
 									</div>
@@ -160,10 +160,10 @@ if (!isset($_SESSION["id"])){
 									<div class="card-body">
 										<div class="billing-address-form">
 											<form action="../index.php">
-												<p><input type="text" placeholder="Barbara Perez Santiago" required></p>
-												<p><input type="text" placeholder="0000 0000 0000 0000" required maxlength="19" minlength="19"></p>
-												<p><input type="text" placeholder="01/2025" required maxlength="7" minlength="7"></p>
-												<p><input type="text" placeholder="CVV" required maxlength="3" minlength="3"></p>
+												<p><input type="text" name="nombre" placeholder="Barbara Perez Santiago" required></p>
+												<p><input type="text" name="tarjeta" placeholder="0000 0000 0000 0000" required maxlength="19" minlength="19"></p>
+												<p><input type="text" name="caducidad" placeholder="01/2025" required maxlength="7" minlength="7"></p>
+												<p><input type="text" name="cvv" placeholder="CVV" required maxlength="3" minlength="3"></p>
 											</form>
 										</div>
 									</div>
