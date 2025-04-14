@@ -38,13 +38,15 @@ class Factura
     // Método para agregar una nueva factura
     public function addFactura($factura)
     {
-        $consulta = "INSERT INTO facturas (id_pedido, monto_total) 
-                     VALUES (:id_pedido, :monto_total)";
+        $consulta = "INSERT INTO facturas (id_pedido, monto_total,nombre_archivo) 
+                     VALUES (:id_pedido, :monto_total, :nombre_archivo)";
         $result = $this->conPDO->prepare($consulta); // Prepara la consulta
 
         // Asocia los valores de $factura a los parámetros de la consulta
         $result->bindParam(":id_pedido", $factura["id_pedido"]);
         $result->bindParam(":monto_total", $factura["monto_total"]);
+        $result->bindParam(":nombre_archivo", $factura["nombre_archivo"]);
+
 
         return $result->execute(); // Ejecuta la consulta y devuelve el resultado (true o false)
     }

@@ -108,16 +108,13 @@ if (!isset($_SESSION["id"])) {
                 </div>
             <?php else: ?>
             <div class="col-md-9">
-                <div class="d-flex justify-content-between mb-3">
-                    <a href="/Floristeria/view/crearFactura.php" class="btn btn-warning">Crear Factura</a>
-                </div>
                 <table class="table table-bordered">
                     <thead>
                         <tr>
                             <th>Id Pedido</th>
                             <th>Fecha de Factura</th>
                             <th>Monto Total</th>
-                            <th>Editar</th>
+                            <th>Enlace</th>
                             <th>Eliminar</th>
                         </tr>
                     </thead>
@@ -127,7 +124,7 @@ if (!isset($_SESSION["id"])) {
                                 <td><?php echo $factura["id_pedido"] ?></td>
                                 <td><?php echo $factura["fecha_factura"] ?></td>
                                 <td><?php echo $factura["monto_total"] ?></td>
-                                <td><a href="../controller/obtenerFacturaController.php?id_factura=<?php echo $factura['id_factura'] ?>" class="btn btn-info"><i class="fas fa-edit"></i></a></td>
+                                <td><?php echo "<a target='_blank' href='". $factura["nombre_archivo"]."'>Descargar</a>" ?></td>
                                 <td><a href="../controller/eliminarFacturaController.php?id_factura=<?php echo $factura['id_factura'] ?>" class="btn btn-danger" onclick="return confirm('¿Desea eliminar esta factura?')"><i class="fas fa-trash-alt"></i></a></td>
                             </tr>
                         <?php endforeach; ?>

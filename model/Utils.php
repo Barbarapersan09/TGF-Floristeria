@@ -13,6 +13,8 @@ require_once '../vendor/autoload.php'; // Asegúrate de que apunta al archivo au
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
+require_once 'Factura.php';
+
 if (!class_exists('model\Utils')) {
 
 
@@ -176,7 +178,7 @@ if (!class_exists('model\Utils')) {
          $mail = new PHPMailer(true);
 
          try {
-              // Configuración del servidor SMTP
+            // Configuración del servidor SMTP
             $mail->isSMTP();
             $mail->Host       = 'smtp.gmail.com';
             $mail->SMTPAuth   = true;
@@ -206,9 +208,17 @@ if (!class_exists('model\Utils')) {
             ';
 
             $rutaPDF = Utils::facturaPDF(Utils::generarFacturaHtml($usuario, $productos, $datos));
-            if($rutaPDF){
-                $mail-> addAttachment($rutaPDF);
+            if ($rutaPDF) {
+               $mail->addAttachment($rutaPDF);
             }
+            $factura = new Factura();
+            $factura_actual = [
+               'id_pedido' => $datos['id_pedido'],
+               'monto_total' => $datos['monto'],
+               'nombre_archivo' => $rutaPDF
+            ];
+            $respuesta = $factura->addFactura($factura_actual);
+
             // Enviar correo
             $mail->send();
             return true;
@@ -220,8 +230,9 @@ if (!class_exists('model\Utils')) {
          }
       }
       //En este metodo vamos a generar la factura con html.
-      public static function generarFacturaHtml($usuario, $productos, $datos){
-          $html = '<!DOCTYPE html>
+      public static function generarFacturaHtml($usuario, $productos, $datos)
+      {
+         $html = '<!DOCTYPE html>
             <html lang="en">
             <head>
             <style>
@@ -242,10 +253,10 @@ if (!class_exists('model\Utils')) {
             </head>
             <body>
                 <!--<img src="http://floristeria.kesug.com/assets/img/logo.png" alt="Floristeria Logo" style="max-width: 250px; margin-bottom: 10px;">-->
-                <h2>Número Factura  ##'.$datos['id_pedido'].'</h2>
-                <p>Cliente: '.$usuario['nombre'].'</p>
-                <p>Email: '.$usuario['email'].'</p>
-                <p>Fecha: ' . date("d/m/Y").'</p> 
+                <h2>Número Factura  ##' . $datos['id_pedido'] . '</h2>
+                <p>Cliente: ' . $usuario['nombre'] . '</p>
+                <p>Email: ' . $usuario['email'] . '</p>
+                <p>Fecha: ' . date("d/m/Y") . '</p> 
                 <h3>Productos</h3>
                 <table>
                     <tr>
@@ -254,60 +265,65 @@ if (!class_exists('model\Utils')) {
                         <th>Precio</th>
                         <th>Subtotal</th>
                     </tr>';
-                    foreach($productos as $producto){
-                        $nombre= $producto['nombre'];
-                        $cantidad = intval($producto['cantidad']);
-                        $precio = floatval($producto['precio']);
-                        $subtotal = $precio * $cantidad;
-                        $html .= ' 
+         foreach ($productos as $producto) {
+            $nombre = $producto['nombre'];
+            $cantidad = intval($producto['cantidad']);
+            $precio = floatval($producto['precio']);
+            $subtotal = $precio * $cantidad;
+            $html .= ' 
                         <tr>
-                            <td>'.$nombre.'</td>
-                            <td>'.$cantidad.'</td>
-                            <td>'.number_format($precio, 2).'</td>
-                            <td>'.number_format($subtotal, 2).'</td>
+                            <td>' . $nombre . '</td>
+                            <td>' . $cantidad . '</td>
+                            <td>' . number_format($precio, 2) . '</td>
+                            <td>' . number_format($subtotal, 2) . '</td>
                         </tr>';
-                    }
-                   
-                $html .='
+         }
+
+         $html .= '
+                    <tr class="total">
+                        <td colspan="3">Envio:</td>
+                        <td class="total-cel"> 3.00€</td>
+                    </tr>
                     <tr class="total">
                         <td colspan="3">Total:</td>
-                        <td class="total-cel"> '.number_format($datos['monto'], 2).'€</td>
+                        <td class="total-cel"> ' . number_format($datos['monto'], 2) . '€</td>
                     </tr>
                 </table>';
-            $html.='
+         $html .= '
            
             </body>
             </html>
             ';
-          return $html;
+         return $html;
       }
       //Funcion para generar el PDF de la factura.
-      public static function facturaPDF($html){
-          $apikey = "7qsFEfY6LvqnC3NykiNZe30Pbwcx5T89jeCcvt0n5MiB8g43ohoWWNZn7aYHoS0b";
-          $url = "https://api.html2pdf.app/v1/generate";
-          $data = [
-              'html'=> $html,
-              'apiKey'=> $apikey
-          ];
-          $option = [
-              'http'=> [
-                  'header'=> "Content-type: application/json",
-                  'method'=> 'POST',
-                  'content'=> json_encode($data),
-                  'ignore_errors'=> true
-              ]
-          ];
-          $context = stream_context_create($option);
-          $response = file_get_contents($url,false,$context);
-          if(strpos($response,"%PDF")!==0){
-            file_put_contents('../facturas/debug.txt',$response);
+      public static function facturaPDF($html)
+      {
+         $apikey = "7qsFEfY6LvqnC3NykiNZe30Pbwcx5T89jeCcvt0n5MiB8g43ohoWWNZn7aYHoS0b";
+         $url = "https://api.html2pdf.app/v1/generate";
+         $data = [
+            'html' => $html,
+            'apiKey' => $apikey
+         ];
+         $option = [
+            'http' => [
+               'header' => "Content-type: application/json",
+               'method' => 'POST',
+               'content' => json_encode($data),
+               'ignore_errors' => true
+            ]
+         ];
+         $context = stream_context_create($option);
+         $response = file_get_contents($url, false, $context);
+         if (strpos($response, "%PDF") !== 0) {
+            file_put_contents('../facturas/debug.txt', $response);
             return false;
-          }
+         }
 
-          $nombrePDF = 'factura_'.uniqid().'.pdf';
-          $ruta = '../facturas/' .$nombrePDF;
-          file_put_contents($ruta, $response);
-          return $ruta;
+         $nombrePDF = 'factura_' . uniqid() . '.pdf';
+         $ruta = '../facturas/' . $nombrePDF;
+         file_put_contents($ruta, $response);
+         return $ruta;
       }
 
       public static function crearPedido($montoTotal)
@@ -315,7 +331,7 @@ if (!class_exists('model\Utils')) {
          if (session_status() === PHP_SESSION_NONE) {
             session_start();
          }
-         
+
          require_once 'Pedido.php';
 
          // Crea una instancia de la clase Pedido para gestionar las operaciones relacionadas con la base de datos.
@@ -326,7 +342,7 @@ if (!class_exists('model\Utils')) {
          $usuario = [
             "email" => "barbarapersan09@gmail.com",
             "nombre" => "Barbara"
-        ];
+         ];
          // Intenta agregar la nueva Pedido a la base de datos utilizando el método `addPedido`.
          $id_pedido = $gestorPedidos->createPedido($id_usuario, $montoTotal, $estado, $metodo);
          if ($id_pedido) {
@@ -388,7 +404,7 @@ if (!class_exists('model\Utils')) {
       }
       //-----------------------------------------------------------------------------------------------------------------------------------------
 
-       public static function correo_contacto($email)
+      public static function correo_contacto($email)
       {
          $mail = new PHPMailer(true);
 
