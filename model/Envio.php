@@ -130,7 +130,7 @@ class Envio
         try {
             $sql = $this->conPDO->prepare('SELECT p.* FROM pedidos p
             LEFT JOIN envios e on p.id_pedido= e.id_pedido 
-            WHERE p.estado_pedido = "Completado" AND e.id_pedido IS NULL;');
+            WHERE p.estado_pedido = "Pendiente" AND e.id_pedido IS NULL;');
             $sql->execute();
             return $sql->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {

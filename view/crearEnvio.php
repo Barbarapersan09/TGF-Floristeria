@@ -10,7 +10,7 @@ if (!isset($_SESSION["rol"]) || $_SESSION["rol"] !== "admin") {
 	//var_dump($_SESSION);
 }
 $ids = obtenerIds();
-// var_dump($ids);
+ //var_dump($ids);
 ?>
 <!DOCTYPE html>
 <html lang="es">

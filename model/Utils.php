@@ -30,7 +30,12 @@ if (!class_exists('model\Utils')) {
          $conPDO = null;
          try {
             require "global.php";
-            $conPDO = new PDO("mysql:host=" . $DB_SERVER . ";dbname=" . $DB_SCHEMA, $DB_USER, $DB_PASSWD);
+            $dns= "mysql:host=$DB_SERVER;dbname=$DB_SCHEMA;charset=utf8mb4";
+            $opciones=[
+                PDO::MYSQL_ATTR_INIT_COMMAND=>"SET NAMES utf8mb4",
+                PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION
+            ];
+            $conPDO = new PDO($dns, $DB_USER, $DB_PASSWD, $opciones);
             return $conPDO;
          } catch (PDOException $e) {
             print "¡Error al conectar!: " . $e->getMessage() . "<br/>";

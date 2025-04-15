@@ -112,7 +112,6 @@ if (!isset($_SESSION["id"])) {
                             <th>Numero Pedido</th>
                             <th>Id Usuario</th>
                             <th>Monto Total</th>
-                            <th>Estado del Pedido</th>
                             <th>Fecha de Creacion</th>
                             <th>Editar</th>
                             <th>Eliminar</th>
@@ -124,7 +123,6 @@ if (!isset($_SESSION["id"])) {
                                 <td><?php echo $pedido["id_pedido"] ?></td>
                                 <td><?php echo $pedido["id_usuario"] ?></td>
                                 <td><?php echo $pedido["monto_total"] ?></td>
-                                <td><?php echo $pedido["estado_pedido"] ?></td>
                                 <td><?php echo $pedido["fecha_creacion"] ?></td>
                                 <td><a href="../controller/obtenerPedidoController.php?id_pedido=<?php echo $pedido['id_pedido'] ?>" class="btn btn-info"><i class="fas fa-edit"></i></a></td>
                                 <td><a href="../controller/eliminarPedidoController.php?id_pedido=<?php echo $pedido['id_pedido'] ?>" class="btn btn-danger" onclick="return confirm('¿Desea eliminar este Pedido?')"><i class="fas fa-trash-alt"></i></a></td>
