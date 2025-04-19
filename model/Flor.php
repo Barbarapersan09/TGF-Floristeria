@@ -25,18 +25,38 @@ class Flor
         return $result->fetchAll(PDO::FETCH_ASSOC); // Devuelve los resultados como un array asociativo
     }
 
-    // Método para obtener una flor específica por su ID
-    public function getFlorById($id_flor)
-    {
-        $consulta = "SELECT * , c.nombre_categoria 
+   // Método público que permite obtener la información de una flor específica usando su ID
+public function getFlorById($id_flor)
+{
+    // 1. Creamos una consulta SQL que selecciona:
+    //    - Todos los campos de la tabla "flores" (por eso se usa "*")
+    //    - El campo "nombre_categoria" de la tabla "categorias_flores"
+    //    - Se hace un JOIN para unir ambas tablas a través de su relación (id_categoria)
+    //    - El WHERE se asegura de que solo se muestre la flor que tiene el ID que le pasamos
+    $consulta = "SELECT * , c.nombre_categoria 
         FROM flores f 
         JOIN categorias_flores c ON f.id_categoria = c.id_categoria
-        WHERE id_flor=:id_flor"; // Consulta SQL con un parámetro
-        $result = $this->conPDO->prepare($consulta); // Prepara la consulta
-        $result->bindParam(":id_flor", $id_flor); // Asocia el valor del ID al parámetro
-        $result->execute(); // Ejecuta la consulta
-        return $result->fetchAll(PDO::FETCH_ASSOC); // Devuelve el resultado
-    }
+        WHERE id_flor=:id_flor";  // ":id_flor" es un marcador que luego sustituiremos por el valor real
+
+    // 2. Usamos prepare() para preparar esa consulta antes de ejecutarla.
+    //    Esto ayuda a evitar errores y protege contra ataques de inyección SQL.
+    $result = $this->conPDO->prepare($consulta);
+
+    // 3. Aquí le decimos a la consulta que el valor del marcador ":id_flor"
+    //    será igual al valor que nos llega por el parámetro $id_flor
+    $result->bindParam(":id_flor", $id_flor);
+
+    // 4. Ejecutamos la consulta ya preparada y con el parámetro asignado
+    $result->execute();
+
+    // 5. Devolvemos el resultado como un array asociativo (clave => valor)
+    //    Esto nos permite acceder fácilmente a cada dato de la flor por su nombre
+    return $result->fetchAll(PDO::FETCH_ASSOC);
+
+    // Nota: Aunque normalmente solo se devolverá una flor (porque el ID es único),
+    //       usamos fetchAll() por si acaso en algún momento se quiere ampliar o reutilizar.
+}
+
 
     // Método para agregar una nueva flor a la base de datos
     public function addFlor($flor)

@@ -280,7 +280,7 @@ header("Content-Type: text/html; charset=utf-8");
 							<a href="obtenerFlorController.php?action=mostrar&id=<?= $flor["id_flor"] ?>"><img src="<?= $flor['url_imagen'] ?>" alt=""></a>
 						</div>
 						<h3><?= $flor["nombre"] ?></h3>
-						<p class="product-price"><span><?= $flor["precio"] ?></span></p>
+						<p class="product-price"><span><?= $flor["precio"] ?>€</span></p>
 						<form action="../controller/carritoController.php?action=add" method="POST">
 							<input type="hidden" name="producto_id" value="<?= $flor["id_flor"] ?>">
 							<input type="hidden" name="nombre" value="<?= $flor["nombre"] ?>">
