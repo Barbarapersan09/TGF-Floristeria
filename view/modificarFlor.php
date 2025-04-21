@@ -169,11 +169,11 @@ if (!isset($_SESSION["rol"]) || $_SESSION["rol"] !== "admin") {
 				<label for="id_categoria">Categoria del producto</label>
 				<select class="form-control" name="id_categoria" value="<?php echo $flor['id_categoria'] ?>">
 					<option value="<?php echo $flor['id_categoria'] ?>"><?php echo $flor['nombre_categoria'] ?></option>
-					<option value="1">Rosas</option>
-					<option value="2">Lirios</option>
-					<option value="3">Girasoles</option>
-					<option value="4">Tulipanes</option>
-					<option value="5">Orquideas</option>
+					<?php foreach($categorias as $cat): ?>
+						<option value="<?= $cat['id_categoria']?>"<?php $cat['id_categoria']==$flor['id_categoria']? 'selected':'' ?>>
+							<?php $cat['nombre_categoria'] ?>
+						</option>
+					<?php endforeach;?>
 				</select>
 
 			</div>
