@@ -1,9 +1,18 @@
 <?php
+$ruta = "/home/vol3_4/infinityfree.com/if0_38345535/htdocs/controller/obtenerFlorController.php";
+require_once $ruta;
 session_start();
 if (!isset($_SESSION["rol"]) || $_SESSION["rol"] !== "admin") {
 	header("Location: login.php");
 	//var_dump($_SESSION);
 }
+if(!file_exists($ruta)){
+    die(' 1');
+}
+if(!function_exists('getCategorias')){
+//    die('La funcion no existe');
+}
+$categorias= \controller\getCategorias();
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -63,9 +72,9 @@ if (!isset($_SESSION["rol"]) || $_SESSION["rol"] !== "admin") {
 								<li class="current-list-item"><a href="../index.php">Inicio</a></li>
 								<li>
 									<?php if (isset($_SESSION["rol"]) && $_SESSION["rol"] === "admin"): ?>
-										<a href="controller/mainFlorController.php">Gestionar Tienda</a>
+										<a href="../controller/mainFlorController.php">Gestionar Tienda</a>
 									<?php else: ?>
-										<a href="controller/mainFlorController.php">Tienda</a>
+										<a href="../controller/mainFlorController.php">Tienda</a>
 									<?php endif; ?>
 								</li>
 								<li><a href="../view/about.php">Sobre nosotros</a></li>
@@ -161,12 +170,13 @@ if (!isset($_SESSION["rol"]) || $_SESSION["rol"] !== "admin") {
 			</div>
 			<div class="mb-3">
 				<label for="id_categoria">Categoria del producto</label>
-				<select class="form-control" name="id_categoria" id="categoria-filter">
-					<option value="1">Rosas</option>
-					<option value="2">Lirios</option>
-					<option value="3">Girasoles</option>
-					<option value="4">Tulipanes</option>
-					<option value="5">Orquídeas</option>
+				<select class="form-control" name="id_categoria">
+					<option value="">-- Selecciona una Categoría --</option>
+					<?php foreach ($categorias as $cat): ?>
+						<option value="<?= $cat['id_categoria'] ?>">
+							<?php echo $cat['nombre_categoria'] ?>
+						</option>
+					<?php endforeach; ?>
 				</select>
 			</div>
 			<button class="btn btn-secondary" type="submit">Crear producto</button>
@@ -198,16 +208,16 @@ if (!isset($_SESSION["rol"]) || $_SESSION["rol"] !== "admin") {
 					<div class="footer-box pages">
 						<h2 class="widget-title">Menú</h2>
 						<ul>
-							 <li><a href="../index.php">Inicio</a></li>
-                                <li>
-                                    <?php if(isset($_SESSION["rol"]) && $_SESSION["rol"]=== "admin"): ?>
-                                        <a href="../controller/mainFlorController.php">Gestionar Tienda</a>
-                                    <?php else:?>
-                                        <a href="../controller/mainFlorController.php">Tienda</a>
-                                    <?php endif;?>
-                                </li>
-                                <li><a href="../view/about.php">Sobre Nosotros</a></li>
-                                <li><a href="../view/contact.php">Contacto</a></li>
+							<li><a href="../index.php">Inicio</a></li>
+							<li>
+								<?php if (isset($_SESSION["rol"]) && $_SESSION["rol"] === "admin"): ?>
+									<a href="../controller/mainFlorController.php">Gestionar Tienda</a>
+								<?php else: ?>
+									<a href="../controller/mainFlorController.php">Tienda</a>
+								<?php endif; ?>
+							</li>
+							<li><a href="../view/about.php">Sobre Nosotros</a></li>
+							<li><a href="../view/contact.php">Contacto</a></li>
 						</ul>
 					</div>
 				</div>

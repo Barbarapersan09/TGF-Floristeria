@@ -35,3 +35,10 @@ if(isset($_GET["id"]) && $_GET["action"] === "mostrar") {
         header("Location: ../view/perfil.php");
     }
 }
+function getCategorias(){
+    $gestorCategoria = new Categoria();
+    $categorias= $gestorCategoria->getAllCategorias();
+    return $categorias;
+}
+//$categorias= getCategorias();
+//var_dump($categorias);
